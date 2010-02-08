@@ -1,5 +1,5 @@
 /*!
- * Eve 0.1.0 - JavaScript Events Library
+ * Eve 0.1.1 - JavaScript Events Library
  *
  * Copyright (c) 2010 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/eve/)
  * Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
@@ -13,19 +13,20 @@ eve = (function (oldEve, wasit, objectsMap, id, events) {
         },
         newEve = function (obj) {
             var oid;
-            for (var i in objectsMap) if (objectsMap.hasOwnProperty(i) && objectsMap[i] === obj) {
-                oid = i;
-                break;
+            for (var i in objectsMap) {
+                if (objectsMap.hasOwnProperty(i) && objectsMap[i] === obj) {
+                    oid = i;
+                    break;
+                }
             }
             oid = oid || id++;
             objectsMap[oid] = obj;
             return new Eve(oid, obj);
         };
 
-    function binder(isontop) {
-        var command = isontop ? "unshift" : "push";
+    function binder(command) {
         return function (name, handler) {
-            if (name) {
+            if (name && handler) {
                 var e = events[this.id] = events[this.id] || {};
                 (e[name] = e[name] || [])[command](handler);
             }
@@ -33,26 +34,34 @@ eve = (function (oldEve, wasit, objectsMap, id, events) {
         };
     }
 
-    Eve.prototype.bind = binder();
+    Eve.prototype.bind = binder("push");
 
-    Eve.prototype.bindOnTop = binder(1);
+    Eve.prototype.bindOnTop = binder("unshift");
 
     Eve.prototype.unbind = function (name, handler) {
         if (name) {
             var e = events[this.id],
                 handlers = e[name],
                 i = handlers && handlers.length;
-            while (i--) if (handlers[i] == handler) {
-                handlers.splice(i, 1);
-                if (!handlers.length) {
-                    delete e[name];
-                    i = 0;
-                    for (var j in e) if (e.hasOwnProperty(j)) {
+            if (handler) {
+                while (i--) {
+                    if (handlers[i] == handler) {
+                        handlers.splice(i, 1);
+                        break;
+                    }
+                }
+            } else {
+                handlers.length = 0;
+            }
+            if (!handlers.length) {
+                delete e[name];
+                i = 0;
+                for (var j in e) {
+                    if (e.hasOwnProperty(j)) {
                         i++;
                     }
-                    !i && delete events[this.id] && delete objectsMap[this.id];
                 }
-                break;
+                !i && delete events[this.id] && delete objectsMap[this.id];
             }
         } else {
             delete events[this.id];
@@ -79,7 +88,7 @@ eve = (function (oldEve, wasit, objectsMap, id, events) {
         return this;
     };
 
-    newEve.version = "0.1.0";
+    newEve.version = "0.1.1";
     newEve.toString = function () {
         return "You are running Eve v." + this.version;
     };
