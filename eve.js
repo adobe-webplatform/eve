@@ -1,5 +1,5 @@
 /*!
- * Eve 0.1.1 - JavaScript Events Library
+ * Eve 0.1.2 - JavaScript Events Library
  *
  * Copyright (c) 2010 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/eve/)
  * Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
@@ -70,13 +70,13 @@ eve = (function (oldEve, wasit, objectsMap, id, events) {
         return this;
     };
 
-    Eve.prototype.fire = function (name, e) {
+    Eve.prototype.fire = function (name) {
         if (name) {
             var handlers = events[this.id] && events[this.id][name],
                 length = handlers && handlers.length;
             if (length) {
                 for (var i = 0; i < length; i++) {
-                    var res = handlers[i].call(this.host, e), u;
+                    var res = handlers[i].apply(this.host, Array.prototype.slice.call(arguments, 1)), u;
                     if (res !== u && !res) {
                         break;
                     }
@@ -88,7 +88,7 @@ eve = (function (oldEve, wasit, objectsMap, id, events) {
         return this;
     };
 
-    newEve.version = "0.1.1";
+    newEve.version = "0.1.2";
     newEve.toString = function () {
         return "You are running Eve v." + this.version;
     };
