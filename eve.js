@@ -1,51 +1,65 @@
-/*!
- * Eve 0.1.2 - JavaScript Events Library
+/*
+ * Eve 0.2.0 - JavaScript Events Library
  *
- * Copyright (c) 2010 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/eve/)
+ * Copyright (c) 2010 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/)
  * Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
  */
- 
-eve = (function () {
-    var version = "0.1.2",
+
+var eve = (function () {
+    var version = "0.2.0",
         events = {n: {}},
         eve = function (name, scope) {
-            var names = name.split("."),
-                e = events,
+            var e = events,
                 args = Array.prototype.slice.call(arguments, 2),
+                listeners = eve.listeners(name),
                 errors = [];
-            for (var i = 0, ii = names.length; i < ii; i++) {
-                e = e.n;
-                if (!e[names[i]]) {
-                    return [{error: "Name doesn\u2019t exist"}];
-                }
-                e = e[names[i]];
+            if (!listeners) {
+                return null;
             }
-            while (e.n) {
-                if (e.f) {
-                    for (i = 0, ii = e.f.length; i < ii; i++) {
-                        try {
-                            e.f[i].apply(scope, args);
-                        } catch (ex) {
-                            errors.push({error: ex && ex.message || ex, func: e.f[i]});
-                        }
-                    }
+            for (var i = 0, ii = listeners.length; i < ii; i++) {
+                try {
+                    listeners[i].apply(scope, args);
+                } catch (ex) {
+                    errors.push({error: ex && ex.message || ex, func: listeners[i]});
                 }
-                for (var key in e.n) if (e.n.hasOwnProperty(key) && e.n[key].f) {
-                    var funcs = e.n[key].f;
-                    for (i = 0, ii = funcs.length; i < ii; i++) {
-                        try {
-                            funcs[i].apply(scope, args);
-                        } catch (e) {
-                            errors.push({error: e && e.message || e, func: funcs[i]});
-                        }
-                    }
-                }
-                e = e.n;
             }
             if (errors.length) {
                 return errors;
             }
         };
+    eve.listeners = function (name) {
+        var names = name.split("."),
+            e = events,
+            es = [e],
+            out = [];
+        for (var i = 0, ii = names.length; i < ii; i++) {
+            var nes = [];
+            for (var j = 0, jj = es.length; j < jj; j++) {
+                e = es[j].n;
+                e[names[i]] && nes.push(e[names[i]]);
+                e["*"] && nes.push(e["*"]);
+            }
+            es = nes;
+        }
+        for (j = 0, jj = es.length; j < jj; j++) {
+            e = es[j];
+            while (e.n) {
+                if (e.f) {
+                    for (i = 0, ii = e.f.length; i < ii; i++) {
+                        out.push(e.f[i]);
+                    }
+                }
+                for (var key in e.n) if (e.n[has](key) && e.n[key].f) {
+                    var funcs = e.n[key].f;
+                    for (i = 0, ii = funcs.length; i < ii; i++) {
+                        out.push(funcs[i]);
+                    }
+                }
+                e = e.n;
+            }
+        }
+        return out.length ? out : null;
+    };
     eve.on = function (name, f) {
         var names = name.split("."),
             e = events;
@@ -80,7 +94,7 @@ eve = (function () {
                     }
                     !e.f.length && delete e.f;
                 }
-                for (var key in e.n) if (e.n.hasOwnProperty(key) && e.n[key].f) {
+                for (var key in e.n) if (e.n[has](key) && e.n[key].f) {
                     var funcs = e.n[key].f;
                     for (i = 0, ii = funcs.length; i < ii; i++) if (funcs[i] == f) {
                         funcs.splice(i, 1);
@@ -90,7 +104,7 @@ eve = (function () {
                 }
             } else {
                 delete e.f;
-                for (key in e.n) if (e.n.hasOwnProperty(key) && e.n[key].f) {
+                for (key in e.n) if (e.n[has](key) && e.n[key].f) {
                     delete e.n[key].f;
                 }
             }
@@ -104,4 +118,4 @@ eve = (function () {
     };
     return eve;
 })();
-typeof exports != "undefined" && (exports.eve = eve);
+typeof exports != "undefined" && exports != null && (exports.eve = eve);
