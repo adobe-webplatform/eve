@@ -1,22 +1,62 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <title>E</title>
-        <script src="eve2.js" type="text/javascript" charset="utf-8"></script>
-        <script type="text/javascript">
-            var f1, f2;
-            eve.on("a.b", f1 = function (e) {alert(e + this);});
-            eve("a", "a", 1);
-            eve.on("a.b.c", f2 = function (e) {alert("second: " + e);});
-            eve("a.b", "b", 2);
-            eve.unbind("a.b.c");
-            
-            eve("blah");
-            eve("a", "c", 2);
-        </script>
-    </head>
-    <body>
+    <meta charset="utf-8">
+    <title>Eve Use Case</title>
+    <script src="eve.js"></script>
+    <script>
+        var log = function (text) {
+            log.log = log.log || [];
+            log.log.push(text);
+        };
+        window.onload = function () {
+            document.getElementById("res").innerHTML = log.log.join("<br>");
+        };
+    </script>
+    <script>
+        var f1, f2, f3, f4;
+
+        // setting up listeners
+        eve.on("hit", f1 = function () {
+            log("   I’m hit!");
+        });
+        eve.on("hit/face", f2 = function () {
+            log("   Oh, my face!");
+        });
+        eve.on("hit/chest", f3 = function () {
+            log("   Oh, my chest!");
+        });
+        eve.on("hit/*/leg", f4 = function () {
+            log("   Ouch!");
+        });
         
-    </body>
+        // fire events
+        log("In your face!");
+        eve("hit/face");
+        // I’m hit!
+        // Oh, my face!
+        log("Take that!");
+        eve("hit/chest/leg/face");
+        // I’m hit!
+        // Oh, my chest!
+        // Ouch!
+
+        // Unbinding
+        log("");
+        eve.unbind("hit", f3);
+        log("Take that!");
+        eve("hit/chest/leg/face");
+        // I’m hit!
+        // Ouch!
+
+        // Unbinding by wildcard
+        log("");
+        eve.unbind("hit/*");
+        log("In your face!");
+        eve("hit/face");
+        // I’m hit!
+        log("Take that!");
+        eve("hit/chest/leg/face");
+        // I’m hit!
+    </script>
+    <pre id="res"></pre>
 </html>
