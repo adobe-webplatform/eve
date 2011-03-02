@@ -14,17 +14,17 @@ var eve = (function () {
         events = {n: {}},
     /*\
      * eve
-     ( method )
+     [ method ]
      **
      * Fires event with given `name`, given scope and other parameters.
      **
      # <strong>Arguments</strong>
      **
-     - name (string) name of the event, dot (.) or slash (/) separated
+     - name (string) name of the event, dot (`.`) or slash (`/`) separated
      - scope (object) context for the event handlers
      - varargs (...) the rest of arguments will be sent to event handlers
      **
-     < (array) array of errors, if any. Each element of the array is in format:
+     = (array) array of errors, if any. Each element of the array is in format:
      | {
      |     error: // error message,
      |     func: // handler that caused error
@@ -49,15 +49,15 @@ var eve = (function () {
         };
     /*\
      * eve.listeners
-     ( method )
+     [ method ]
      **
      * Internal method which gives you array of all event handlers that will be triggered by the given `name`.
      **
      # <strong>Arguments</strong>
      **
-     - name (string) name of the event, dot (.) or slash (/) separated
+     - name (string) name of the event, dot (`.`) or slash (`/`) separated
      **
-     < (array) array of event handlers
+     = (array) array of event handlers
     \*/
     eve.listeners = function (name) {
         var names = name.split(separator),
@@ -92,18 +92,19 @@ var eve = (function () {
     };
     /*\
      * eve.on
-     ( method )
+     [ method ]
      **
-     * Binds given event handler with a given name. You can use wildcards “*” for the names:
+     * Binds given event handler with a given name. You can use wildcards “`*`” for the names:
      | eve.on("*.under.*", f);
      | eve("mouse.under.floor"); // triggers f
+     * Use @eve to trigger the listener.
      **
      # <strong>Arguments</strong>
      **
-     - name (string) name of the event, dot (.) or slash (/) separated, with optional wildcards
+     - name (string) name of the event, dot (`.`) or slash (`/`) separated, with optional wildcards
      - f (function) event handler function
      **
-     < (boolean) false if given function already assigned as event handler to given name, true otherwise
+     = (boolean) `false` if given function already assigned as event handler to given name, `true` otherwise
     \*/
     eve.on = function (name, f) {
         var names = name.split(separator),
@@ -122,7 +123,7 @@ var eve = (function () {
     };
     /*\
      * eve.nt
-     ( method )
+     [ method ]
      **
      * Could be used inside event handler to figure out actual name of the event.
      **
@@ -130,9 +131,9 @@ var eve = (function () {
      **
      - subname (string) #optional subname of the event
      **
-     < (string) name of the event, if `subname` is not specified
+     = (string) name of the event, if `subname` is not specified
      * or
-     < (boolean) true, if current event’s name contains `subname`
+     = (boolean) `true`, if current event’s name contains `subname`
     \*/
     eve.nt = function (subname) {
         if (subname) {
@@ -142,13 +143,13 @@ var eve = (function () {
     };
     /*\
      * eve.unbind
-     ( method )
+     [ method ]
      **
      * Removes given function from the list of event listeners assigned to given name.
      **
      # <strong>Arguments</strong>
      **
-     - name (string) name of the event, dot (.) or slash (/) separated, with optional wildcards
+     - name (string) name of the event, dot (`.`) or slash (`/`) separated, with optional wildcards
      - f (function) event handler function
     \*/
     eve.unbind = function (name, f) {
@@ -204,7 +205,7 @@ var eve = (function () {
     };
     /*\
      * eve.version
-     ( property )
+     [ property (string) ]
      **
      * Current version of the library.
     \*/
