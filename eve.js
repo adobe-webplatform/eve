@@ -1,7 +1,7 @@
 /*
  * Eve 0.2.2 - JavaScript Events Library
  *
- * Copyright (c) 2010 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/)
+ * Copyright (c) 2011 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/)
  * Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
  */
 
@@ -25,10 +25,10 @@ var eve = (function () {
      - varargs (...) the rest of arguments will be sent to event handlers
      **
      = (array) array of errors, if any. Each element of the array is in format:
-     | {
-     |     error: // error message,
-     |     func: // handler that caused error
-     | }
+     o {
+     o     error (string) error message
+     o     func (function) handler that caused error
+     o }
     \*/
         eve = function (name, scope) {
             var e = events,
