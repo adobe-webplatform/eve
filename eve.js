@@ -1,15 +1,19 @@
 /*
- * Eve 0.2.2 - JavaScript Events Library
+ * Eve 0.2.3 - JavaScript Events Library
  *
  * Copyright (c) 2011 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/)
  * Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
  */
 
 var eve = (function () {
-    var version = "0.2.2",
+    var version = "0.2.3",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
         wildcard = "*",
+        fun = function () {},
+        numsort = function (a, b) {
+            return a - b;
+        },
         current_event,
         events = {n: {}},
     /*\
@@ -18,7 +22,7 @@ var eve = (function () {
      **
      * Fires event with given `name`, given scope and other parameters.
      **
-     # <strong>Arguments</strong>
+     > Arguments
      **
      - name (string) name of the event, dot (`.`) or slash (`/`) separated
      - scope (object) context for the event handlers
@@ -34,17 +38,49 @@ var eve = (function () {
             var e = events,
                 args = Array.prototype.slice.call(arguments, 2),
                 listeners = eve.listeners(name),
+                z = 0,
+                l,
+                indexed = [],
+                queue = {},
                 errors = [];
             current_event = name;
-            for (var i = 0, ii = listeners.length; i < ii; i++) {
-                try {
-                    listeners[i].apply(scope, args);
-                } catch (ex) {
-                    errors.push({error: ex && ex.message || ex, func: listeners[i]});
+            for (var i = 0, ii = listeners.length; i < ii; i++) if ("zIndex" in listeners[i]) {
+                indexed.push(listeners[i].zIndex);
+                if (listeners[i].zIndex < 0) {
+                    queue[listeners[i].zIndex] = listeners[i];
                 }
             }
-            if (errors.length) {
-                return errors;
+            indexed.sort(numsort);
+            while (indexed[z] < 0) {
+                l = queue[indexed[z++]];
+                if (l.apply(scope, args) === false) {
+                    return;
+                }
+            }
+            for (i = 0; i < ii; i++) {
+                l = listeners[i];
+                if ("zIndex" in l) {
+                    if (l.zIndex == indexed[z]) {
+                        if (l.apply(scope, args) === false) {
+                            return;
+                        }
+                        do {
+                            z++;
+                            l = queue[indexed[z]];
+                            if (l) {
+                                if (l.apply(scope, args) === false) {
+                                    return;
+                                }
+                            }
+                        } while (l)
+                    } else {
+                        queue[l.zIndex] = l;
+                    }
+                } else {
+                    if (l.apply(scope, args) === false) {
+                        return;
+                    }
+                }
             }
         };
     /*\
@@ -53,7 +89,7 @@ var eve = (function () {
      **
      * Internal method which gives you array of all event handlers that will be triggered by the given `name`.
      **
-     # <strong>Arguments</strong>
+     > Arguments
      **
      - name (string) name of the event, dot (`.`) or slash (`/`) separated
      **
@@ -90,6 +126,7 @@ var eve = (function () {
         }
         return out;
     };
+    
     /*\
      * eve.on
      [ method ]
@@ -99,12 +136,19 @@ var eve = (function () {
      | eve("mouse.under.floor"); // triggers f
      * Use @eve to trigger the listener.
      **
-     # <strong>Arguments</strong>
+     > Arguments
      **
      - name (string) name of the event, dot (`.`) or slash (`/`) separated, with optional wildcards
      - f (function) event handler function
      **
-     = (boolean) `false` if given function already assigned as event handler to given name, `true` otherwise
+     = (function) returned function accept one number parameter that represents z-index of the handler. It is optional feature and only used when you need to ensure that some subset of handlers will be invoked in a given order, despite of the order of assignment. 
+     > Example:
+     | eve.on("mouse", eat)(2);
+     | eve.on("mouse", scream);
+     | eve.on("mouse", catch)(1);
+     * This will ensure that `catch` function will be called before `eat`.
+     * If you want to put you hadler before not indexed handlers specify negative value.
+     * Note: I assume most of the time you don’t need to worry about z-index, but it’s nice to have this feature “just in case”.
     \*/
     eve.on = function (name, f) {
         var names = name.split(separator),
@@ -116,10 +160,14 @@ var eve = (function () {
         }
         e.f = e.f || [];
         for (i = 0, ii = e.f.length; i < ii; i++) if (e.f[i] == f) {
-            return !1;
+            return fun;
         }
         e.f.push(f);
-        return !0;
+        return function (zIndex) {
+            if (+zIndex == +zIndex) {
+                f.zIndex = +zIndex;
+            }
+        };
     };
     /*\
      * eve.nt
@@ -127,7 +175,7 @@ var eve = (function () {
      **
      * Could be used inside event handler to figure out actual name of the event.
      **
-     # <strong>Arguments</strong>
+     > Arguments
      **
      - subname (string) #optional subname of the event
      **
@@ -147,7 +195,7 @@ var eve = (function () {
      **
      * Removes given function from the list of event listeners assigned to given name.
      **
-     # <strong>Arguments</strong>
+     > Arguments
      **
      - name (string) name of the event, dot (`.`) or slash (`/`) separated, with optional wildcards
      - f (function) event handler function
