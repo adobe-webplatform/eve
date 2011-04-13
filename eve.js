@@ -1,12 +1,12 @@
 /*
- * Eve 0.2.3 - JavaScript Events Library
+ * Eve 0.2.4 - JavaScript Events Library
  *
  * Copyright (c) 2011 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/)
  * Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
  */
 
-var eve = (function () {
-    var version = "0.2.3",
+(function (glob) {
+    var version = "0.2.4",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
         wildcard = "*",
@@ -39,6 +39,7 @@ var eve = (function () {
                 args = Array.prototype.slice.call(arguments, 2),
                 listeners = eve.listeners(name),
                 z = 0,
+                f = false,
                 l,
                 indexed = [],
                 queue = {},
@@ -53,32 +54,30 @@ var eve = (function () {
             indexed.sort(numsort);
             while (indexed[z] < 0) {
                 l = queue[indexed[z++]];
-                if (l.apply(scope, args) === false) {
-                    return;
+                if (l.apply(scope, args) === f) {
+                    return f;
                 }
             }
             for (i = 0; i < ii; i++) {
                 l = listeners[i];
                 if ("zIndex" in l) {
                     if (l.zIndex == indexed[z]) {
-                        if (l.apply(scope, args) === false) {
-                            return;
+                        if (l.apply(scope, args) === f) {
+                            return f;
                         }
                         do {
                             z++;
                             l = queue[indexed[z]];
-                            if (l) {
-                                if (l.apply(scope, args) === false) {
-                                    return;
-                                }
+                            if (l && l.apply(scope, args) === f) {
+                                return f;
                             }
                         } while (l)
                     } else {
                         queue[l.zIndex] = l;
                     }
                 } else {
-                    if (l.apply(scope, args) === false) {
-                        return;
+                    if (l.apply(scope, args) === f) {
+                        return f;
                     }
                 }
             }
@@ -261,6 +260,5 @@ var eve = (function () {
     eve.toString = function () {
         return "You are running Eve " + version;
     };
-    return eve;
-})();
-typeof exports != "undefined" && exports != null && (exports.eve = eve);
+    (typeof module != "undefined" && module.exports) ? (module.exports = eve) : (glob.eve = eve);
+})(this);
