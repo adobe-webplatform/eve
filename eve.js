@@ -1,12 +1,12 @@
-/*
- * Eve 0.2.4 - JavaScript Events Library
- *
- * Copyright (c) 2011 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/)
- * Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license.
- */
+// ┌──────────────────────────────────────────────────────────────────────────────────────┐ \\
+// │ Eve 0.3.0 - JavaScript Events Library                                                │ \\
+// ├──────────────────────────────────────────────────────────────────────────────────────┤ \\
+// │ Copyright (c) 2008-2011 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/)          │ \\
+// │ Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license. │ \\
+// └──────────────────────────────────────────────────────────────────────────────────────┘ \\
 
 (function (glob) {
-    var version = "0.2.4",
+    var version = "0.3.0",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
         wildcard = "*",
@@ -15,6 +15,7 @@
             return a - b;
         },
         current_event,
+        stop,
         events = {n: {}},
     /*\
      * eve
@@ -28,11 +29,7 @@
      - scope (object) context for the event handlers
      - varargs (...) the rest of arguments will be sent to event handlers
      **
-     = (array) array of errors, if any. Each element of the array is in format:
-     o {
-     o     error (string) error message
-     o     func (function) handler that caused error
-     o }
+     = (object) array of returned values from the listeners
     \*/
         eve = function (name, scope) {
             var e = events,
@@ -43,8 +40,10 @@
                 l,
                 indexed = [],
                 queue = {},
+                out = [],
                 errors = [];
             current_event = name;
+            stop = 0;
             for (var i = 0, ii = listeners.length; i < ii; i++) if ("zIndex" in listeners[i]) {
                 indexed.push(listeners[i].zIndex);
                 if (listeners[i].zIndex < 0) {
@@ -54,33 +53,38 @@
             indexed.sort(numsort);
             while (indexed[z] < 0) {
                 l = queue[indexed[z++]];
-                if (l.apply(scope, args) === f) {
-                    return f;
+                out.push(l.apply(scope, args));
+                if (stop) {
+                    return out;
                 }
             }
             for (i = 0; i < ii; i++) {
                 l = listeners[i];
                 if ("zIndex" in l) {
                     if (l.zIndex == indexed[z]) {
-                        if (l.apply(scope, args) === f) {
-                            return f;
+                        out.push(l.apply(scope, args));
+                        if (stop) {
+                            return out;
                         }
                         do {
                             z++;
                             l = queue[indexed[z]];
-                            if (l && l.apply(scope, args) === f) {
-                                return f;
+                            l && out.push(l.apply(scope, args));
+                            if (stop) {
+                                return out;
                             }
                         } while (l)
                     } else {
                         queue[l.zIndex] = l;
                     }
                 } else {
-                    if (l.apply(scope, args) === f) {
-                        return f;
+                    out.push(l.apply(scope, args));
+                    if (stop) {
+                        return out;
                     }
                 }
             }
+            return out.length ? out : null;
         };
     /*\
      * eve.listeners
@@ -167,6 +171,15 @@
                 f.zIndex = +zIndex;
             }
         };
+    };
+    /*\
+     * eve.stop
+     [ method ]
+     **
+     * Is used inside event handler to stop event
+    \*/
+    eve.stop = function () {
+        stop = 1;
     };
     /*\
      * eve.nt
