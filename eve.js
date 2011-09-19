@@ -1,12 +1,12 @@
 // ┌──────────────────────────────────────────────────────────────────────────────────────┐ \\
-// │ Eve 0.3.1 - JavaScript Events Library                                                │ \\
+// │ Eve 0.3.2 - JavaScript Events Library                                                │ \\
 // ├──────────────────────────────────────────────────────────────────────────────────────┤ \\
 // │ Copyright (c) 2008-2011 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/)          │ \\
 // │ Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license. │ \\
 // └──────────────────────────────────────────────────────────────────────────────────────┘ \\
 
 (function (glob) {
-    var version = "0.3.1",
+    var version = "0.3.2",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
         wildcard = "*",
@@ -33,6 +33,7 @@
     \*/
         eve = function (name, scope) {
             var e = events,
+                oldstop = stop,
                 args = Array.prototype.slice.call(arguments, 2),
                 listeners = eve.listeners(name),
                 z = 0,
@@ -55,6 +56,7 @@
                 l = queue[indexed[z++]];
                 out.push(l.apply(scope, args));
                 if (stop) {
+                    stop = oldstop;
                     return out;
                 }
             }
@@ -64,6 +66,7 @@
                     if (l.zIndex == indexed[z]) {
                         out.push(l.apply(scope, args));
                         if (stop) {
+                            stop = oldstop;
                             return out;
                         }
                         do {
@@ -71,6 +74,7 @@
                             l = queue[indexed[z]];
                             l && out.push(l.apply(scope, args));
                             if (stop) {
+                                stop = oldstop;
                                 return out;
                             }
                         } while (l)
@@ -80,10 +84,12 @@
                 } else {
                     out.push(l.apply(scope, args));
                     if (stop) {
+                        stop = oldstop;
                         return out;
                     }
                 }
             }
+            stop = oldstop;
             return out.length ? out : null;
         };
     /*\
