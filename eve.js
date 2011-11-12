@@ -150,13 +150,13 @@
      - name (string) name of the event, dot (`.`) or slash (`/`) separated, with optional wildcards
      - f (function) event handler function
      **
-     = (function) returned function accept one number parameter that represents z-index of the handler. It is optional feature and only used when you need to ensure that some subset of handlers will be invoked in a given order, despite of the order of assignment. 
+     = (function) returned function accepts a single numeric parameter that represents z-index of the handler. It is an optional feature and only used when you need to ensure that some subset of handlers will be invoked in a given order, despite of the order of assignment. 
      > Example:
      | eve.on("mouse", eat)(2);
      | eve.on("mouse", scream);
      | eve.on("mouse", catch)(1);
      * This will ensure that `catch` function will be called before `eat`.
-     * If you want to put you hadler before not indexed handlers specify negative value.
+     * If you want to put your handler before non-indexed handlers, specify a negative value.
      * Note: I assume most of the time you don’t need to worry about z-index, but it’s nice to have this feature “just in case”.
     \*/
     eve.on = function (name, f) {
@@ -182,7 +182,7 @@
      * eve.stop
      [ method ]
      **
-     * Is used inside event handler to stop event
+     * Is used inside an event handler to stop the event, preventing any subsequent listeners from firing.
     \*/
     eve.stop = function () {
         stop = 1;
