@@ -28,6 +28,9 @@
         eve.on("hit/*/leg", f4 = function () {
             log("   Ouch!");
         });
+        eve.once("hit", function () {
+            log("   You scoundrel!");
+        })(-1);
         
         // fire events
         log("In your face!");
