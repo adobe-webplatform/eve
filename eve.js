@@ -271,6 +271,30 @@
         }
     };
     /*\
+     * eve.once
+     [ method ]
+     **
+     * Binds given event handler with a given name to only run once then unbind itself.
+     | eve.once("login", f);
+     | eve("login"); // triggers f
+     | eve("login"); // no listeners
+     * Use @eve to trigger the listener.
+     **
+     > Arguments
+     **
+     - name (string) name of the event, dot (`.`) or slash (`/`) separated, with optional wildcards
+     - f (function) event handler function
+     **
+     = (function) same return function as @eve.on
+    \*/
+    eve.once = function (name, f) {
+        var f2 = function () {
+            f.apply(this, arguments);
+            eve.unbind(name, f2);
+        };
+        return eve.on(name, f2);
+    };
+    /*\
      * eve.version
      [ property (string) ]
      **
