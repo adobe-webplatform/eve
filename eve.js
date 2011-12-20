@@ -289,8 +289,8 @@
     \*/
     eve.once = function (name, f) {
         var f2 = function () {
-            f.apply(this, arguments);
             eve.unbind(name, f2);
+            return f.apply(this, arguments);
         };
         return eve.on(name, f2);
     };
