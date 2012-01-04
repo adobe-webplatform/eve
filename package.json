@@ -7,7 +7,7 @@
         "url"   : "http://dmitry.baranovskiy.com"
     },
 
-    "version" : "0.3.0",
+    "version" : "0.3.3",
 
     "main"    : "./eve.js",
 
