@@ -1,12 +1,12 @@
 // ┌──────────────────────────────────────────────────────────────────────────────────────┐ \\
-// │ Eve 0.4.1 - JavaScript Events Library                                                │ \\
+// │ Eve 0.3.4 - JavaScript Events Library                                                │ \\
 // ├──────────────────────────────────────────────────────────────────────────────────────┤ \\
 // │ Copyright (c) 2008-2011 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/)          │ \\
 // │ Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license. │ \\
 // └──────────────────────────────────────────────────────────────────────────────────────┘ \\
 
 (function (glob) {
-    var version = "0.4.1",
+    var version = "0.3.4",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
         wildcard = "*",
@@ -304,5 +304,5 @@
     eve.toString = function () {
         return "You are running Eve " + version;
     };
-    (typeof module != "undefined" && module.exports) ? (module.exports = eve) : (glob.eve = eve);
+    (typeof module != "undefined" && module.exports) ? (module.exports = eve) : (typeof define != "undefined" ? (define("eve", [], function() { return eve; })) : (glob.eve = eve));
 })(this);
