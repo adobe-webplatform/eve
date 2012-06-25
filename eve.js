@@ -1,12 +1,12 @@
 // ┌──────────────────────────────────────────────────────────────────────────────────────┐ \\
-// │ Eve 0.3.4 - JavaScript Events Library                                                │ \\
+// │ Eve 0.3.5 - JavaScript Events Library                                                │ \\
 // ├──────────────────────────────────────────────────────────────────────────────────────┤ \\
-// │ Copyright (c) 2008-2011 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/)          │ \\
+// │ Copyright (c) 2008-2012 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/)          │ \\
 // │ Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license. │ \\
 // └──────────────────────────────────────────────────────────────────────────────────────┘ \\
 
 (function (glob) {
-    var version = "0.3.4",
+    var version = "0.3.5",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
         wildcard = "*",
@@ -91,6 +91,8 @@
             current_event = ce;
             return out.length ? out : null;
         };
+		// Undocumented. Debug only.
+		eve._events = events;
     /*\
      * eve.listeners
      [ method ]
@@ -163,8 +165,7 @@
             e = events;
         for (var i = 0, ii = names.length; i < ii; i++) {
             e = e.n;
-            !e[names[i]] && (e[names[i]] = {n: {}});
-            e = e[names[i]];
+            e = e[names[i]] || (e[names[i]] = {n: {}});
         }
         e.f = e.f || [];
         for (i = 0, ii = e.f.length; i < ii; i++) if (e.f[i] == f) {
@@ -207,17 +208,28 @@
         return current_event;
     };
     /*\
-     * eve.unbind
+     * eve.off
      [ method ]
      **
      * Removes given function from the list of event listeners assigned to given name.
+	 * If no arguments specified all the events will be cleared.
      **
      > Arguments
      **
      - name (string) name of the event, dot (`.`) or slash (`/`) separated, with optional wildcards
      - f (function) event handler function
     \*/
-    eve.unbind = function (name, f) {
+    /*\
+     * eve.unbind
+     [ method ]
+     **
+     * See @eve.off
+    \*/
+    eve.off = eve.unbind = function (name, f) {
+		if (!name) {
+		    eve._events = events = {n: {}};
+			return;
+		}
         var names = name.split(separator),
             e,
             key,
