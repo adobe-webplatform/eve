@@ -300,9 +300,10 @@
     \*/
     eve.once = function (name, f) {
         var f2 = function () {
-            var res = f.apply(this, arguments);
+            var res;
+
             eve.unbind(name, f2);
-            return res;
+            return res = f.apply(this, arguments);
         };
         return eve.on(name, f2);
     };
