@@ -1,12 +1,12 @@
 // ┌──────────────────────────────────────────────────────────────────────────────────────┐ \\
-// │ Eve 0.4.0 - JavaScript Events Library                                                │ \\
+// │ Eve 0.4.1 - JavaScript Events Library                                                │ \\
 // ├──────────────────────────────────────────────────────────────────────────────────────┤ \\
 // │ Copyright (c) 2008-2012 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/)          │ \\
 // │ Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license. │ \\
 // └──────────────────────────────────────────────────────────────────────────────────────┘ \\
 
 (function (glob) {
-    var version = "0.4.0",
+    var version = "0.4.1",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
         wildcard = "*",
@@ -323,9 +323,8 @@
     \*/
     eve.once = function (name, f) {
         var f2 = function () {
-            var res = f.apply(this, arguments);
             eve.unbind(name, f2);
-            return res;
+            return f.apply(this, arguments);
         };
         return eve.on(name, f2);
     };

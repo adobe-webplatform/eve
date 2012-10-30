@@ -2,7 +2,7 @@
   "name": "eve",
   "repo": "DmitryBaranovskiy/eve",
   "description": "Custom Events",
-  "version": "0.3.5",
+  "version": "0.4.1",
   "keywords": ["events"],
   "dependencies": {},
   "development": {},
