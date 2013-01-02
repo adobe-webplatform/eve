@@ -198,7 +198,7 @@
      = (function) possible event handler function
     \*/
     eve.f = function (name, scope) {
-        var fargs = [].slice.call(arguments, 0);
+        var fargs = [name, scope].concat([].slice.call(arguments, 2));
         return function () {
             eve.apply(null, fargs.concat([].slice.call(arguments, 0)));
         };
