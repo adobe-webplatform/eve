@@ -1,12 +1,24 @@
-// ┌──────────────────────────────────────────────────────────────────────────────────────┐ \\
-// │ Eve 0.4.1 - JavaScript Events Library                                                │ \\
-// ├──────────────────────────────────────────────────────────────────────────────────────┤ \\
-// │ Copyright (c) 2008-2012 Dmitry Baranovskiy (http://dmitry.baranovskiy.com/)          │ \\
-// │ Licensed under the MIT (http://www.opensource.org/licenses/mit-license.php) license. │ \\
-// └──────────────────────────────────────────────────────────────────────────────────────┘ \\
+// Copyright (c) 2013 Adobe Systems Incorporated. All rights reserved.
+// 
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+// 
+// http://www.apache.org/licenses/LICENSE-2.0
+// 
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+// ┌────────────────────────────────────────────────────────────┐ \\
+// │ Eve 0.4.2 - JavaScript Events Library                      │ \\
+// ├────────────────────────────────────────────────────────────┤ \\
+// │ Author Dmitry Baranovskiy (http://dmitry.baranovskiy.com/) │ \\
+// └────────────────────────────────────────────────────────────┘ \\
 
 (function (glob) {
-    var version = "0.4.1",
+    var version = "0.4.2",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
         wildcard = "*",
@@ -32,6 +44,7 @@
      = (object) array of returned values from the listeners
     \*/
         eve = function (name, scope) {
+			name = String(name);
             var e = events,
                 oldstop = stop,
                 args = Array.prototype.slice.call(arguments, 2),
@@ -162,6 +175,10 @@
      * Note: I assume most of the time you don’t need to worry about z-index, but it’s nice to have this feature “just in case”.
     \*/
     eve.on = function (name, f) {
+		name = String(name);
+		if (typeof f != "function") {
+			return function () {};
+		}
         var names = name.split(separator),
             e = events;
         for (var i = 0, ii = names.length; i < ii; i++) {
@@ -229,6 +246,18 @@
             return new RegExp("(?:\\.|\\/|^)" + subname + "(?:\\.|\\/|$)").test(current_event);
         }
         return current_event;
+    };
+    /*\
+     * eve.nts
+     [ method ]
+     **
+     * Could be used inside event handler to figure out actual name of the event.
+     **
+     **
+     = (array) names of the event
+    \*/
+    eve.nts = function () {
+        return current_event.split(separator);
     };
     /*\
      * eve.off
