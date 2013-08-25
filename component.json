@@ -1,6 +1,6 @@
 {
   "name": "eve",
-  "repo": "DmitryBaranovskiy/eve",
+  "repo": "adobe-webplatform/eve",
   "description": "Custom Events",
   "version": "0.4.1",
   "keywords": ["events"],
