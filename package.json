@@ -13,6 +13,6 @@
 
     "repository": {
         "type": "git",
-        "url": "git@github.com:adobe/eve.git"
+        "url": "git@github.com:adobe-webplatform/eve.git"
     }
 }
