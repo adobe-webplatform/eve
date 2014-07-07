@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // ┌────────────────────────────────────────────────────────────┐ \\
-// │ Eve 0.4.2 - JavaScript Events Library                      │ \\
+// │ Eve 0.5.0 - JavaScript Events Library                      │ \\
 // ├────────────────────────────────────────────────────────────┤ \\
 // │ Author Dmitry Baranovskiy (http://dmitry.baranovskiy.com/) │ \\
 // └────────────────────────────────────────────────────────────┘ \\
 
 (function (glob) {
-    var version = "0.4.2",
+    var version = "0.5.0",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
         comaseparator = /\s*,\s*/,
@@ -45,6 +45,11 @@
                 }
             }
         },
+        objtos = Object.prototype.toString,
+        Str = String,
+        isArray = Array.isArray || function (ar) {
+            return ar instanceof Array || objtos.call(ar) == "[object Array]";
+        };
     /*\
      * eve
      [ method ]
@@ -60,7 +65,6 @@
      = (object) array of returned values from the listeners. Array has two methods `.firstDefined()` and `.lastDefined()` to get first or last not `undefined` value.
     \*/
         eve = function (name, scope) {
-            name = String(name);
             var e = events,
                 oldstop = stop,
                 args = Array.prototype.slice.call(arguments, 2),
@@ -137,7 +141,7 @@
      = (array) array of event handlers
     \*/
     eve.listeners = function (name) {
-        var names = name.split(separator),
+        var names = isArray(name) ? name : name.split(separator),
             e = events,
             item,
             items,
@@ -167,7 +171,25 @@
         }
         return out;
     };
-    
+    /*\
+     * eve.separator
+     [ method ]
+
+     * If for some reasons you don’t like default separators (`.` or `/`) you can specify yours
+     * here. Be aware that if you pass a string longer than one character it will be treated as
+     * a list of characters.
+
+     - separator (string) new separator. Empty string resets to default: `.` or `/`.
+    \*/
+    eve.separator = function (sep) {
+        if (sep) {
+            sep = Str(sep).replace(/(?=[\.\^\]\[\-])/g, "\\");
+            sep = "[" + sep + "]";
+            separator = new RegExp(sep);
+        } else {
+            separator = /[\.\/]/;
+        }
+    };
     /*\
      * eve.on
      [ method ]
@@ -177,9 +199,10 @@
      | eve("mouse.under.floor"); // triggers f
      * Use @eve to trigger the listener.
      **
-     > Arguments
-     **
      - name (string) name of the event, dot (`.`) or slash (`/`) separated, with optional wildcards
+     - f (function) event handler function
+     **
+     - name (array) if you don’t want to use separators, you can use array of strings
      - f (function) event handler function
      **
      = (function) returned function accepts a single numeric parameter that represents z-index of the handler. It is an optional feature and only used when you need to ensure that some subset of handlers will be invoked in a given order, despite of the order of assignment. 
@@ -193,14 +216,13 @@
      * Note: I assume most of the time you don’t need to worry about z-index, but it’s nice to have this feature “just in case”.
     \*/
     eve.on = function (name, f) {
-        name = String(name);
         if (typeof f != "function") {
             return function () {};
         }
-        var names = name.split(comaseparator);
+        var names = isArray(name) ? (isArray(name[0]) ? name : [name]) : Str(name).split(comaseparator);
         for (var i = 0, ii = names.length; i < ii; i++) {
             (function (name) {
-                var names = name.split(separator),
+                var names = isArray(name) ? name : Str(name).split(separator),
                     e = events,
                     exist;
                 for (var i = 0, ii = names.length; i < ii; i++) {
@@ -267,10 +289,11 @@
      = (boolean) `true`, if current event’s name contains `subname`
     \*/
     eve.nt = function (subname) {
+        var cur = isArray(current_event) ? current_event.join(".") : current_event;
         if (subname) {
-            return new RegExp("(?:\\.|\\/|^)" + subname + "(?:\\.|\\/|$)").test(current_event);
+            return new RegExp("(?:\\.|\\/|^)" + subname + "(?:\\.|\\/|$)").test(cur);
         }
-        return current_event;
+        return cur;
     };
     /*\
      * eve.nts
@@ -282,7 +305,7 @@
      = (array) names of the event
     \*/
     eve.nts = function () {
-        return current_event.split(separator);
+        return isArray(current_event) ? current_event : current_event.split(separator);
     };
     /*\
      * eve.off
@@ -307,14 +330,14 @@
             eve._events = events = {n: {}};
             return;
         }
-        var names = name.split(comaseparator);
+        var names = isArray(name) ? (isArray(name[0]) ? name : [name]) : Str(name).split(comaseparator);
         if (names.length > 1) {
             for (var i = 0, ii = names.length; i < ii; i++) {
                 eve.off(names[i], f);
             }
             return;
         }
-        names = name.split(separator);
+        names = isArray(name) ? name : Str(name).split(separator);
         var e,
             key,
             splice,
@@ -384,7 +407,7 @@
     \*/
     eve.once = function (name, f) {
         var f2 = function () {
-            eve.unbind(name, f2);
+            eve.off(name, f2);
             return f.apply(this, arguments);
         };
         return eve.on(name, f2);
