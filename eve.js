@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // ┌────────────────────────────────────────────────────────────┐ \\
-// │ Eve 0.5.0 - JavaScript Events Library                      │ \\
+// │ Eve 0.5.1 - JavaScript Events Library                      │ \\
 // ├────────────────────────────────────────────────────────────┤ \\
 // │ Author Dmitry Baranovskiy (http://dmitry.baranovskiy.com/) │ \\
 // └────────────────────────────────────────────────────────────┘ \\
@@ -422,5 +422,14 @@
     eve.toString = function () {
         return "You are running Eve " + version;
     };
-    (typeof module != "undefined" && module.exports) ? (module.exports = eve) : (typeof define === "function" && define.amd ? (define("eve", [], function() { return eve; })) : (glob.eve = eve));
+
+    if (typeof define === "function" && define.amd) {
+        define("eve", [], function() {
+            return eve;
+        });
+    } else if (typeof exports === "object") {
+        module.exports = eve;
+    } else {
+        glob.eve = eve;
+    }
 })(this);
