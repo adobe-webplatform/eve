@@ -422,5 +422,14 @@
     eve.toString = function () {
         return "You are running Eve " + version;
     };
-    (typeof module != "undefined" && module.exports) ? (module.exports = eve) : (typeof define === "function" && define.amd ? (define("eve", [], function() { return eve; })) : (glob.eve = eve));
+
+    if (typeof define === "function" && define.amd) {
+        define("eve", [], function() {
+            return eve;
+        });
+    } else if (typeof exports === "object") {
+        module.exports = eve;
+    } else {
+        glob.eve = eve;
+    }
 })(this);
