@@ -26,7 +26,7 @@
     } else {
         glob.eve = factory();
     }
-}(window || this, function() {
+}(this, function() {
     var version = "0.5.1",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
