@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // ┌────────────────────────────────────────────────────────────┐ \\
-// │ Eve 0.5.1 - JavaScript Events Library                      │ \\
+// │ Eve @@VERSION - JavaScript Events Library                      │ \\
 // ├────────────────────────────────────────────────────────────┤ \\
 // │ Author Dmitry Baranovskiy (http://dmitry.baranovskiy.com/) │ \\
 // └────────────────────────────────────────────────────────────┘ \\
@@ -27,7 +27,7 @@
         glob.eve = factory();
     }
 }(window || this, function() {
-    var version = "0.5.1",
+    var version = "@@VERSION",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
         comaseparator = /\s*,\s*/,
