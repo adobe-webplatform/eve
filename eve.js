@@ -342,7 +342,8 @@
             key,
             splice,
             i, ii, j, jj,
-            cur = [events];
+            cur = [events],
+            inodes = [];
         for (i = 0, ii = names.length; i < ii; i++) {
             for (j = 0; j < cur.length; j += splice.length - 2) {
                 splice = [j, 1];
@@ -350,10 +351,18 @@
                 if (names[i] != wildcard) {
                     if (e[names[i]]) {
                         splice.push(e[names[i]]);
+                        inodes.unshift({
+                            n: e,
+                            name: names[i]
+                        });
                     }
                 } else {
                     for (key in e) if (e[has](key)) {
                         splice.push(e[key]);
+                        inodes.unshift({
+                            n: e,
+                            name: key
+                        });
                     }
                 }
                 cur.splice.apply(cur, splice);
@@ -386,6 +395,20 @@
                 }
                 e = e.n;
             }
+        }
+        // prune inner nodes in path
+        prune: for (i = 0, ii = inodes.length; i < ii; i++) {
+            e = inodes[i];
+            for (key in e.n[e.name].f) {
+                // not empty (has listeners)
+                continue prune;
+            }
+            for (key in e.n[e.name].n) {
+                // not empty (has children)
+                continue prune;
+            }
+            // is empty
+            delete e.n[e.name];
         }
     };
     /*\
