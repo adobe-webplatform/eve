@@ -7,7 +7,7 @@
         "url"   : "http://dmitry.baranovskiy.com"
     },
 	"description" : "Simple custom events",
-    "version" : "0.5.1",
+    "version" : "0.5.2",
 
     "main"    : "./eve.js",
 
