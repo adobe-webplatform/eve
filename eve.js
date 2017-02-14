@@ -12,13 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // ┌────────────────────────────────────────────────────────────┐ \\
-// │ Eve 0.5.2 - JavaScript Events Library                      │ \\
+// │ Eve 0.5.3 - JavaScript Events Library                      │ \\
 // ├────────────────────────────────────────────────────────────┤ \\
 // │ Author Dmitry Baranovskiy (http://dmitry.baranovskiy.com/) │ \\
 // └────────────────────────────────────────────────────────────┘ \\
 
 (function (glob) {
-    var version = "0.5.2",
+    var version = "0.5.3",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
         comaseparator = /\s*,\s*/,
@@ -55,8 +55,6 @@
      [ method ]
 
      * Fires event with given `name`, given scope and other parameters.
-
-     > Arguments
 
      - name (string) name of the *event*, dot (`.`) or slash (`/`) separated
      - scope (object) context for the event handlers
@@ -133,8 +131,6 @@
      [ method ]
 
      * Internal method which gives you array of all event handlers that will be triggered by the given `name`.
-
-     > Arguments
 
      - name (string) name of the event, dot (`.`) or slash (`/`) separated
 
@@ -219,7 +215,7 @@
         if (typeof f != "function") {
             return function () {};
         }
-        var names = isArray(name) ? (isArray(name[0]) ? name : [name]) : Str(name).split(comaseparator);
+        var names = isArray(name) ? isArray(name[0]) ? name : [name] : Str(name).split(comaseparator);
         for (var i = 0, ii = names.length; i < ii; i++) {
             (function (name) {
                 var names = isArray(name) ? name : Str(name).split(separator),
@@ -254,7 +250,6 @@
      | eve.on("click", function (a, b, c) {
      |     console.log(a, b, c); // 1, 2, [event object]
      | });
-     > Arguments
      - event (string) event name
      - varargs (…) and any other arguments
      = (function) possible event handler function
@@ -279,8 +274,6 @@
      [ method ]
      **
      * Could be used inside event handler to figure out actual name of the event.
-     **
-     > Arguments
      **
      - subname (string) #optional subname of the event
      **
@@ -314,8 +307,6 @@
      * Removes given function from the list of event listeners assigned to given name.
      * If no arguments specified all the events will be cleared.
      **
-     > Arguments
-     **
      - name (string) name of the event, dot (`.`) or slash (`/`) separated, with optional wildcards
      - f (function) event handler function
     \*/
@@ -330,7 +321,7 @@
             eve._events = events = {n: {}};
             return;
         }
-        var names = isArray(name) ? (isArray(name[0]) ? name : [name]) : Str(name).split(comaseparator);
+        var names = isArray(name) ? isArray(name[0]) ? name : [name] : Str(name).split(comaseparator);
         if (names.length > 1) {
             for (var i = 0, ii = names.length; i < ii; i++) {
                 eve.off(names[i], f);
@@ -421,8 +412,6 @@
      | eve("login"); // no listeners
      * Use @eve to trigger the listener.
      **
-     > Arguments
-     **
      - name (string) name of the event, dot (`.`) or slash (`/`) separated, with optional wildcards
      - f (function) event handler function
      **
@@ -446,5 +435,5 @@
         return "You are running Eve " + version;
     };
     glob.eve = eve;
-    (typeof module != "undefined" && module.exports) ? (module.exports = eve) : (typeof define === "function" && define.amd ? (define("eve", [], function() { return eve; })) : (glob.eve = eve));
-})(window || this);
+    typeof module != "undefined" && module.exports ? module.exports = eve : typeof define === "function" && define.amd ? define("eve", [], function() { return eve; }) : glob.eve = eve;
+})(typeof window != "undefined" ? window : this);

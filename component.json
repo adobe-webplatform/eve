@@ -2,7 +2,7 @@
   "name": "eve",
   "repo": "adobe-webplatform/eve",
   "description": "Custom Events",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "keywords": ["events"],
   "dependencies": {},
   "development": {},
