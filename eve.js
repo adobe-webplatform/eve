@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 // ┌────────────────────────────────────────────────────────────┐ \\
-// │ Eve 0.5.3 - JavaScript Events Library                      │ \\
+// │ Eve 0.5.4 - JavaScript Events Library                      │ \\
 // ├────────────────────────────────────────────────────────────┤ \\
 // │ Author Dmitry Baranovskiy (http://dmitry.baranovskiy.com/) │ \\
 // └────────────────────────────────────────────────────────────┘ \\
 
 (function (glob) {
-    var version = "0.5.3",
+    var version = "0.5.4",
         has = "hasOwnProperty",
         separator = /[\.\/]/,
         comaseparator = /\s*,\s*/,
         wildcard = "*",
-        fun = function () {},
         numsort = function (a, b) {
             return a - b;
         },
@@ -49,7 +48,7 @@
         Str = String,
         isArray = Array.isArray || function (ar) {
             return ar instanceof Array || objtos.call(ar) == "[object Array]";
-        };
+        },
     /*\
      * eve
      [ method ]
@@ -63,18 +62,15 @@
      = (object) array of returned values from the listeners. Array has two methods `.firstDefined()` and `.lastDefined()` to get first or last not `undefined` value.
     \*/
         eve = function (name, scope) {
-            var e = events,
-                oldstop = stop,
+            var oldstop = stop,
                 args = Array.prototype.slice.call(arguments, 2),
                 listeners = eve.listeners(name),
                 z = 0,
-                f = false,
                 l,
                 indexed = [],
                 queue = {},
                 out = [],
-                ce = current_event,
-                errors = [];
+                ce = current_event;
             out.firstDefined = firstDefined;
             out.lastDefined = lastDefined;
             current_event = name;
@@ -124,8 +120,8 @@
             current_event = ce;
             return out;
         };
-        // Undocumented. Debug only.
-        eve._events = events;
+    // Undocumented. Debug only.
+    eve._events = events;
     /*\
      * eve.listeners
      [ method ]
@@ -435,5 +431,5 @@
         return "You are running Eve " + version;
     };
     glob.eve = eve;
-    typeof module != "undefined" && module.exports ? module.exports = eve : typeof define === "function" && define.amd ? define("eve", [], function() { return eve; }) : glob.eve = eve;
+    typeof module != "undefined" && module.exports ? module.exports = eve : typeof define === "function" && define.amd ? define("eve", [], function () { return eve; }) : glob.eve = eve;
 })(typeof window != "undefined" ? window : this);
